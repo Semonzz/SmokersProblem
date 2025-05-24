@@ -11,7 +11,7 @@ tobacco_matches = threading.Semaphore(0)
 paper_matches = threading.Semaphore(0)
 agent_sem = threading.Semaphore(1)
 
-table_mutex = threading.Lock()
+#table_mutex = threading.Lock()
 
 def agent():
     """
@@ -24,10 +24,9 @@ def agent():
     ]
     while True:
         agent_sem.acquire()
-        with table_mutex:
-            comb_sem, comb_name = random.choice(combinations)
-            print(f"\nAgent put: {comb_name}")
-            comb_sem.release()
+        comb_sem, comb_name = random.choice(combinations)
+        print(f"\nAgent put: {comb_name}")
+        comb_sem.release()
 
 def smoker(name, needed_sem):
     """
@@ -38,9 +37,8 @@ def smoker(name, needed_sem):
     """
     while True:
         needed_sem.acquire()
-        with table_mutex:
-            print(f"{name} taked supplies")
-            agent_sem.release()
+        print(f"{name} taked supplies")
+        agent_sem.release()
         print(f"{name} smoking...")
         time.sleep(5)
         print(f"{name} finished smoking.")
@@ -54,6 +52,3 @@ threads.append(threading.Thread(target=smoker, args=("Smoker with matches", toba
 
 for thread in threads:
     thread.start()
-
-for thread in threads:
-    thread.join()
